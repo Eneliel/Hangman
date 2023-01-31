@@ -32,6 +32,12 @@ func main() {
 			fmt.Println("Invalid input")
 			continue
 		}
+		letter := rune(input[0])
+		if isCorrectGuess(targetWord, letter) {
+			guessedLetters[letter] = true
+		} else {
+			HmState++
+		}
 	}
 
 }
@@ -59,7 +65,7 @@ func GetWordGuessProgress(targetWord string, guessedLetters map[rune]bool) strin
 	for _, ch := range targetWord {
 		if ch == ' ' {
 			result += " "
-		} else if guessedLetters[unicode.ToLower(ch)] == true {
+		} else if guessedLetters[unicode.ToLower(ch)] {
 			result += fmt.Sprintf("%c", ch)
 		} else {
 			result += "_"
@@ -77,6 +83,7 @@ func PrintHmStages(HmState int) string {
 	}
 
 	return string(data)
+
 }
 
 func readInput() string {
@@ -87,4 +94,8 @@ func readInput() string {
 	}
 
 	return strings.TrimSpace(input)
+}
+
+func isCorrectGuess(targetWord string, letter rune) bool {
+	return strings.ContainsRune(targetWord, letter)
 }
