@@ -25,11 +25,11 @@ func main() {
 	targetWord := dict[rand.Intn(len(dict))]
 	guessedLetters := InitWords(targetWord)
 	HmState := 0
-	for {
+	for !isGameover(targetWord, HmState, guessedLetters) {
 		GameStages(targetWord, guessedLetters, HmState)
 		input := readInput()
 		if len(input) != 1 {
-			fmt.Println("Invalid input")
+			fmt.Println("Please, use only 1 letter")
 			continue
 		}
 		letter := rune(input[0])
@@ -39,7 +39,14 @@ func main() {
 			HmState++
 		}
 	}
-
+	fmt.Println("Game over...")
+	if isWordGuessed(targetWord, guessedLetters) {
+		fmt.Println("You Win!")
+	} else if isHmComplete(HmState) {
+		fmt.Println("Tou Lose!")
+	} else {
+		panic("invalid state!")
+	}
 }
 
 func RandWord() string {
@@ -54,10 +61,28 @@ func InitWords(targetWord string) map[rune]bool {
 	return guessedLetters
 }
 
+func isWordGuessed(targetWord string, guessedLetters map[rune]bool) bool {
+	for _, ch := range targetWord {
+		if !guessedLetters[unicode.ToLower(ch)] {
+			return false
+		}
+	}
+
+	return true
+}
+
+func isHmComplete(HmState int) bool {
+	return HmState >= 9
+}
+
 func GameStages(targetword string, guessLetters map[rune]bool, HmState int) {
 	fmt.Println(GetWordGuessProgress(targetword, guessLetters))
 	fmt.Println()
 	fmt.Println(PrintHmStages(HmState))
+}
+
+func isGameover(targetWord string, HmState int, guessedWord map[rune]bool) bool {
+	return isWordGuessed(targetWord, guessedWord) || isHmComplete(HmState)
 }
 
 func GetWordGuessProgress(targetWord string, guessedLetters map[rune]bool) string {
