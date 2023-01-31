@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"time"
 	"unicode"
@@ -18,13 +19,9 @@ var dict = []string{
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	targetWord := dict[rand.Intn(len(dict))]
-	targetWord = "Apple"
 	guessedLetters := InitWords(targetWord)
-	GameStages(targetWord, guessedLetters)
-	guessedLetters['p'] = true
-	GameStages(targetWord, guessedLetters)
-	guessedLetters['l'] = true
-	GameStages(targetWord, guessedLetters)
+	HmState := 6
+	GameStages(targetWord, guessedLetters, HmState)
 }
 
 func RandWord() string {
@@ -39,16 +36,33 @@ func InitWords(targetWord string) map[rune]bool {
 	return guessedLetters
 }
 
-func GameStages(targetword string, guessLetters map[rune]bool) {
-	for _, ch := range targetword {
+func GameStages(targetword string, guessLetters map[rune]bool, HmState int) {
+	fmt.Println(GetWordGuessProgress(targetword, guessLetters))
+	fmt.Println()
+	fmt.Println(PrintHmStages(HmState))
+}
+
+func GetWordGuessProgress(targetWord string, guessedLetters map[rune]bool) string {
+	result := ""
+	for _, ch := range targetWord {
 		if ch == ' ' {
-			fmt.Print(" ")
-		} else if guessLetters[unicode.ToLower(ch)] == true {
-			fmt.Printf("%c", ch)
+			result += " "
+		} else if guessedLetters[unicode.ToLower(ch)] == true {
+			result += fmt.Sprintf("%c", ch)
 		} else {
-			fmt.Print("_")
+			result += "_"
 		}
-		fmt.Print(" ")
+		result += " "
 	}
-	fmt.Println(" ")
+	fmt.Println("")
+	return result
+}
+
+func PrintHmStages(HmState int) string {
+	data, err := ioutil.ReadFile(fmt.Sprintf("Stages/Hm%d", HmState))
+	if err != nil {
+		panic(err)
+	}
+
+	return string(data)
 }
