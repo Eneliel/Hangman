@@ -1,13 +1,17 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
+	"os"
+	"strings"
 	"time"
 	"unicode"
 )
 
+var ReadInput = bufio.NewReader(os.Stdin)
 var dict = []string{
 	"Gopher",
 	"Apple",
@@ -20,8 +24,16 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	targetWord := dict[rand.Intn(len(dict))]
 	guessedLetters := InitWords(targetWord)
-	HmState := 6
-	GameStages(targetWord, guessedLetters, HmState)
+	HmState := 0
+	for {
+		GameStages(targetWord, guessedLetters, HmState)
+		input := readInput()
+		if len(input) != 1 {
+			fmt.Println("Invalid input")
+			continue
+		}
+	}
+
 }
 
 func RandWord() string {
@@ -65,4 +77,14 @@ func PrintHmStages(HmState int) string {
 	}
 
 	return string(data)
+}
+
+func readInput() string {
+	fmt.Print("> ")
+	input, err := ReadInput.ReadString('\n')
+	if err != nil {
+		panic(err)
+	}
+
+	return strings.TrimSpace(input)
 }
